@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LearnIT</title>
+</head>
+<body>
+    <form action="{% url 'home' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Load cats</button>
+    </form>
+</body>
+</html>

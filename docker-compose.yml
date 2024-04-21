@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  db:
+    container_name: postgres
+    image: postgres:latest
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    env_file:
+      - .env
+    ports:
+      - 5532:${POSTGRES_PORT}
+
+  django:
+    build: .
+    depends_on:
+      - db
+    container_name: django
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app/
+    ports:
+      - "8000:8000"
+    restart: always
+
+  redis:
+    image: redis
+    restart: always
+
+  worker:
+    restart: always
+    container_name: worker
+    build: .
+    volumes:
+      - .:/app
+    command: ['celery', '-A', 'core', 'worker']
+    depends_on:
+      - redis
+      - db
